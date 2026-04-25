@@ -1,0 +1,21 @@
+# Environment variables
+.env
+
+# Databases and temporary files
+papers.db
+failed_papers.txt
+skipped_papers.txt
+
+# Downloaded PDFs and output folders
+pdf_cache/
+synthesis_output/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE and OS junk
+.vscode/
+venv/
+
+misc/
