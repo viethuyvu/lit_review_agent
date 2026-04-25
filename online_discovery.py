@@ -27,7 +27,7 @@ class OnlineDiscovery:
             elif resp.status_code == 429:
                 print("Rate limit exceeded. Waiting 2 seconds...")
                 time.sleep(2)
-                return self._make_request(url)  # retry
+                return self._make_request(url)
             else:
                 print(f"API error {resp.status_code}: {resp.text[:100]}")
                 return None
@@ -47,12 +47,13 @@ class OnlineDiscovery:
         """
         Fetch full metadata for a paper using its arXiv ID.
         Returns dict with keys: s2_id, title, authors, abstract, citationCount,
-        referenceCount, influentialCitationCount, doi, openAccessPdf, url, etc.
+        referenceCount, influentialCitationCount, openAccessPdf, url, externalIds.
         """
         s2_id = self._arxiv_id_to_s2_id(arxiv_id)
         if not s2_id:
             return None
-        url = f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}?fields=title,authors,abstract,citationCount,referenceCount,influentialCitationCount,doi,openAccessPdf,url,externalIds"
+        # Removed 'doi' from fields to avoid API error
+        url = f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}?fields=title,authors,abstract,citationCount,referenceCount,influentialCitationCount,openAccessPdf,url,externalIds"
         data = self._make_request(url)
         if not data:
             return None
@@ -65,7 +66,6 @@ class OnlineDiscovery:
             'citation_count': data.get('citationCount', 0),
             'reference_count': data.get('referenceCount', 0),
             'influential_citation_count': data.get('influentialCitationCount', 0),
-            'doi': data.get('doi'),
             'open_access_pdf': data.get('openAccessPdf', {}).get('url') if data.get('openAccessPdf') else None,
             'url': data.get('url')
         }

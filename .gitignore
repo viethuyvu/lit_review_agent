@@ -9,6 +9,7 @@ skipped_papers.txt
 # Downloaded PDFs and output folders
 pdf_cache/
 synthesis_output/
+console_log.txt
 
 # Python cache
 __pycache__/

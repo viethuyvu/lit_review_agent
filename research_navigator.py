@@ -191,11 +191,50 @@ class ResearchNavigator:
             f.write(md)
         print(f"Markdown saved to {fname}\nQuick review complete. {len(paper_summaries)} papers stored.\n")
 
+    def regenerate_literature_review(self):
+        """
+        Mode 6: Regenerate a literature review using existing paper summaries from the database.
+        User provides a topic title for the output file.
+        """
+        all_papers = self.db.get_all_papers()
+        if not all_papers:
+            print("No papers in database. Run Quick Literature Review first.")
+            return
+
+        # Collect all summaries (skip papers that have no summaries)
+        paper_summaries = []
+        for paper in all_papers:
+            summaries = paper.get('summaries')
+            if summaries and isinstance(summaries, dict):
+                paper_summaries.append(summaries)
+            else:
+                print(f"Warning: paper '{paper.get('title')}' has no valid summaries – skipped.")
+
+        if not paper_summaries:
+            print("No usable summaries found.")
+            return
+
+        topic = input("Enter a topic name for the literature review (e.g., 'Trustworthy AI'): ").strip()
+        if not topic:
+            topic = "Literature Review from Stored Papers"
+
+        print(f"\nRegenerating literature review for topic: {topic} (using {len(paper_summaries)} papers)")
+        synthesis_agent = SynthesisAgent()
+        md_content = synthesis_agent.synthesize(topic, paper_summaries)
+
+        out_dir = self._get_output_dir()
+        safe_topic = topic.replace(' ', '_').replace('/', '_')
+        fname = os.path.join(out_dir, f"literature_review_{safe_topic}_regenerated.md")
+        with open(fname, "w", encoding="utf-8") as f:
+            f.write(md_content)
+
+        print(f"Regenerated literature review saved to {fname}\n")
+
     def deep_dive(self):
         """
         Mode 2: Deep Dive on a selected paper.
         - Lists papers from the database.
-        - Offers online discovery: similar papers, citing papers, references (via API),
+        - Offers discovery: similar papers, citing papers, references (via API),
           and analysis of key references using Claude (via ReferenceAnalyzer).
         """
         papers = self.db.get_all_papers()
@@ -216,13 +255,13 @@ class ResearchNavigator:
         paper = papers[idx]
         arxiv_id = paper.get('arxiv_id')
         if not arxiv_id:
-            print("No arXiv ID for this paper. Cannot perform online discovery.")
+            print("No arXiv ID for this paper. Cannot perform discovery.")
             return
 
         while True:
-            print(f"\n--- Online Discovery: {paper['title'][:60]} ---")
-            print("1. Find similar papers online")
-            print("2. Show papers that cite this (online)")
+            print(f"\n--- Discovery: {paper['title'][:60]} ---")
+            print("1. Find similar papers")
+            print("2. Show papers that cite this")
             print("3. Show references (what it cites) - from Semantic Scholar")
             print("4. Analyze key references (Claude) - using Semantic Scholar data")
             print("5. Back to main menu")

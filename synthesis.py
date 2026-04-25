@@ -83,7 +83,7 @@ Now produce the Markdown document:"""
         try:
             response = self.client.messages.create(
                 model=self.model,
-                max_tokens=4000,
+                max_tokens=8000,
                 temperature=0.5,
                 messages=[{"role": "user", "content": prompt}]
             )

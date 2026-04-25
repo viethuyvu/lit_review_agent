@@ -13,8 +13,9 @@ def main():
         print("3. Manage blacklist (failed downloads)")
         print("4. Manage skip list (low-relevance papers)")
         print("5. Discover highly cited papers (not in your collection)")
-        print("6. Exit")
-        choice = input("Choose option (1-6): ").strip()
+        print("6. Regenerate literature review from stored papers")
+        print("7. Exit")
+        choice = input("Choose option (1-7): ").strip()
         if choice == "1":
             nav.quick_review()
         elif choice == "2":
@@ -26,6 +27,8 @@ def main():
         elif choice == "5":
             nav.discover_highly_cited_papers()
         elif choice == "6":
+            nav.regenerate_literature_review()
+        elif choice == "7":
             print("Goodbye!")
             sys.exit(0)
         else:
